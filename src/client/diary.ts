@@ -74,13 +74,15 @@ export async function updateDiaryEntry(
   const res = await fetch(`${BASE_URL}/api/services/diary/${entryId}`, {
     method: "PATCH",
     headers: makeHeaders(config),
-    body: JSON.stringify(updates),
+    body: JSON.stringify({ item: updates }),
   });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Failed to update diary entry: ${res.status} - ${text}`);
   }
-  return (await res.json()) as DiaryEntry;
+  const text = await res.text();
+  if (!text) return updates as unknown as DiaryEntry;
+  return JSON.parse(text) as DiaryEntry;
 }
 
 export async function readDiaryNotes(
