@@ -17,7 +17,7 @@ export async function loadAuth(): Promise<AuthConfig | null> {
 
 export async function saveAuth(config: AuthConfig): Promise<void> {
   await mkdir(CONFIG_DIR, { recursive: true });
-  await writeFile(AUTH_FILE, JSON.stringify(config, null, 2));
+  await writeFile(AUTH_FILE, JSON.stringify(config, null, 2), { mode: 0o600 });
 }
 
 export function getConfigDir(): string {

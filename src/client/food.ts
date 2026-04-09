@@ -1,6 +1,5 @@
 import type { AuthConfig, FoodItem } from "./types.js";
-
-const BASE_URL = "https://www.myfitnesspal.com";
+import { BASE_URL, makeReadHeaders } from "./constants.js";
 const BUILD_ID_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export async function fetchBuildId(): Promise<string> {
@@ -33,10 +32,7 @@ export async function searchFood(
   const url = `${BASE_URL}/_next/data/${buildId}/food/calorie-chart-nutrition-facts.json?params=${params}`;
 
   const res = await fetch(url, {
-    headers: {
-      Cookie: `__Secure-next-auth.session-token=${config.sessionToken}`,
-      Accept: "application/json",
-    },
+    headers: makeReadHeaders(config),
   });
 
   if (!res.ok) {
@@ -45,10 +41,7 @@ export async function searchFood(
       buildId = await fetchBuildId();
       const retryUrl = `${BASE_URL}/_next/data/${buildId}/food/calorie-chart-nutrition-facts.json?params=${params}`;
       const retryRes = await fetch(retryUrl, {
-        headers: {
-          Cookie: `__Secure-next-auth.session-token=${config.sessionToken}`,
-          Accept: "application/json",
-        },
+        headers: makeReadHeaders(config),
       });
       if (!retryRes.ok) {
         throw new Error(`Food search failed: ${retryRes.status}`);

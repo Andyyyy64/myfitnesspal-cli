@@ -1,13 +1,9 @@
 import type { AuthConfig, SessionInfo } from "./types.js";
-
-const BASE_URL = "https://www.myfitnesspal.com";
+import { BASE_URL, SESSION_COOKIE_NAME, makeReadHeaders } from "./constants.js";
 
 export async function getSession(config: AuthConfig): Promise<SessionInfo> {
   const res = await fetch(`${BASE_URL}/api/auth/session`, {
-    headers: {
-      Cookie: `__Secure-next-auth.session-token=${config.sessionToken}`,
-      Accept: "application/json",
-    },
+    headers: makeReadHeaders(config),
   });
   if (!res.ok) {
     throw new Error(`Session check failed: ${res.status}`);
@@ -17,10 +13,7 @@ export async function getSession(config: AuthConfig): Promise<SessionInfo> {
 
 export async function getCsrfToken(config: AuthConfig): Promise<string> {
   const res = await fetch(`${BASE_URL}/api/auth/csrf`, {
-    headers: {
-      Cookie: `__Secure-next-auth.session-token=${config.sessionToken}`,
-      Accept: "application/json",
-    },
+    headers: makeReadHeaders(config),
   });
   if (!res.ok) {
     throw new Error(`CSRF fetch failed: ${res.status}`);
@@ -72,7 +65,7 @@ export async function loginWithCredentials(
   // Extract session token from Set-Cookie
   const setCookies = loginRes.headers.getSetCookie?.() ?? [];
   const sessionCookie = setCookies.find((c) =>
-    c.startsWith("__Secure-next-auth.session-token=")
+    c.startsWith(`${SESSION_COOKIE_NAME}=`)
   );
   if (!sessionCookie) {
     throw new Error(

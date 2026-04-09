@@ -1,3 +1,4 @@
+import { SESSION_COOKIE_NAME } from "./constants.js";
 import type {
   AuthConfig,
   DiaryEntry,
@@ -34,7 +35,7 @@ export class MFPClient {
   }
 
   get cookieHeader(): string {
-    return `__Secure-next-auth.session-token=${this.config.sessionToken}`;
+    return `${SESSION_COOKIE_NAME}=${this.config.sessionToken}`;
   }
 
   async getSession(): Promise<SessionInfo> {
@@ -132,4 +133,3 @@ export class MFPClient {
   }
 }
 
-export { MFPClient as default };

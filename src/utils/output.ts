@@ -19,6 +19,10 @@ export function outputError(message: string, jsonMode: boolean): void {
   process.exit(1);
 }
 
+export function todayStr(): string {
+  return new Date().toISOString().split("T")[0];
+}
+
 export function createTable(head: string[], colWidths?: number[]): Table.Table {
   return new Table({ head, colWidths, style: { head: ["cyan"] } });
 }

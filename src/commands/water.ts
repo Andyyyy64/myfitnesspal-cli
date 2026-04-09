@@ -1,11 +1,7 @@
 import { Command } from "commander";
 import { MFPClient } from "../client/index.js";
 import { loadAuth } from "../utils/config.js";
-import { outputResult, outputError } from "../utils/output.js";
-
-function todayStr(): string {
-  return new Date().toISOString().split("T")[0];
-}
+import { outputResult, outputError, todayStr } from "../utils/output.js";
 
 export function registerWaterCommand(program: Command): void {
   program
@@ -23,7 +19,7 @@ export function registerWaterCommand(program: Command): void {
         const client = new MFPClient(config);
 
         if (cups) {
-          const entry = await client.logWater(parseInt(cups), opts.date);
+          const entry = await client.logWater(parseFloat(cups), opts.date);
           outputResult(entry, opts.json, () => {
             console.log(`Logged: ${cups} cups of water on ${opts.date}`);
           });

@@ -2,12 +2,8 @@ import { Command } from "commander";
 import inquirer from "inquirer";
 import { MFPClient } from "../client/index.js";
 import { loadAuth } from "../utils/config.js";
-import { outputResult, outputError } from "../utils/output.js";
+import { outputResult, outputError, todayStr } from "../utils/output.js";
 import type { FoodItem } from "../client/types.js";
-
-function todayStr(): string {
-  return new Date().toISOString().split("T")[0];
-}
 
 export function registerLogCommand(program: Command): void {
   program
@@ -63,6 +59,11 @@ export function registerLogCommand(program: Command): void {
         ]);
 
         const selectedFood = result.items[selectedIndex];
+
+        if (selectedFood.serving_sizes.length === 0) {
+          outputError("This food has no serving sizes defined.", opts.json);
+          return;
+        }
 
         // Select serving size
         const { servingSizeIndex } = await inquirer.prompt([

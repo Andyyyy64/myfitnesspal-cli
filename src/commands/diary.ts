@@ -1,12 +1,8 @@
 import { Command } from "commander";
 import { MFPClient } from "../client/index.js";
 import { loadAuth } from "../utils/config.js";
-import { outputResult, outputError, createTable } from "../utils/output.js";
+import { outputResult, outputError, createTable, todayStr } from "../utils/output.js";
 import type { DiaryEntry } from "../client/types.js";
-
-function todayStr(): string {
-  return new Date().toISOString().split("T")[0];
-}
 
 export function registerDiaryCommand(program: Command): void {
   const diary = program

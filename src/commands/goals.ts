@@ -1,11 +1,7 @@
 import { Command } from "commander";
 import { MFPClient } from "../client/index.js";
 import { loadAuth } from "../utils/config.js";
-import { outputResult, outputError, createTable } from "../utils/output.js";
-
-function todayStr(): string {
-  return new Date().toISOString().split("T")[0];
-}
+import { outputResult, outputError, createTable, todayStr } from "../utils/output.js";
 
 export function registerGoalsCommand(program: Command): void {
   program

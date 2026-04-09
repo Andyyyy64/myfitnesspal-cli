@@ -1,14 +1,5 @@
 import type { AuthConfig, ExerciseEntry } from "./types.js";
-
-const BASE_URL = "https://www.myfitnesspal.com";
-
-function makeHeaders(config: AuthConfig): Record<string, string> {
-  return {
-    Cookie: `__Secure-next-auth.session-token=${config.sessionToken}`,
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  };
-}
+import { BASE_URL, makeHeaders } from "./constants.js";
 
 export interface ExerciseSearchResult {
   id: string;
