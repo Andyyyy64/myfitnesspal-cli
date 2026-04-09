@@ -1,0 +1,36 @@
+{
+  "name": "myfitnesspal-cli",
+  "version": "0.1.0",
+  "description": "CLI for MyFitnessPal - reverse-engineered internal API",
+  "type": "module",
+  "bin": {
+    "mfp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "myfitnesspal",
+    "cli",
+    "diet",
+    "nutrition",
+    "fitness"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cli-table3": "^0.6.5",
+    "commander": "^14.0.3",
+    "inquirer": "^12.11.1"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.9",
+    "@types/node": "^25.5.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
