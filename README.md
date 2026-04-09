@@ -75,6 +75,11 @@ Options: `--meal` (breakfast/lunch/dinner/snack), `--date`, `--serving-size`, `-
 ```bash
 mfp diary                                   # View today's diary
 mfp diary 2026-04-09                        # View specific date
+mfp diary day                               # Show today's day metadata/status
+mfp diary day 2026-04-09                    # Show day metadata for specific date
+mfp diary goals                             # Show diary-specific nutrient goals for today
+mfp diary goals 2026-04-09                  # Show diary-specific nutrient goals for date
+mfp diary get <entryId>                     # Get a single diary entry by ID
 mfp diary delete <entryId>                  # Delete an entry
 mfp diary update <entryId> --servings 3     # Update servings
 mfp diary update <entryId> --meal dinner    # Move to different meal
@@ -84,6 +89,7 @@ mfp diary add-note "Felt good today"        # Add a food note
 mfp diary copy --from-date 2026-04-08 --to-date 2026-04-09 --from-meal lunch --to-meal lunch  # Copy meal
 mfp diary complete                          # Complete today's diary
 mfp diary complete 2026-04-09               # Complete specific date
+mfp diary report --from 2026-04-01 --to 2026-04-07  # Generate a diary report
 ```
 
 ### Food Management
@@ -93,6 +99,8 @@ mfp food get <foodId>                       # Get food details by ID
 mfp food my-foods                           # List your custom foods
 mfp food create --name "My Protein Shake" --calories 250 --protein 30 --carbs 10 --fat 5  # Create custom food
 mfp food create --name "Homemade Bread" --calories 120 --brand "Homemade" --serving-unit "slice" --serving-size 1
+mfp food update <foodId> --name "New Name" --calories 300  # Update a custom food
+mfp food update <foodId> --protein 35 --carbs 15 --fat 8   # Update macros
 mfp food delete <foodId>                    # Delete a custom food
 mfp food recent                             # Recently used foods
 mfp food recent --days 7                    # Last 7 days
@@ -115,6 +123,8 @@ mfp weight 106.3                            # Record weight (kg)
 mfp weight 105.0 --date 2026-04-10          # Record for specific date
 mfp weight --history                        # Show weight history
 mfp weight --history --limit 30             # Last 30 entries
+mfp weight get <id>                         # Get a measurement by ID
+mfp weight delete <id>                      # Delete a measurement by ID
 mfp weight types                            # List measurement types (Neck, Waist, etc.)
 mfp weight add-type "Chest"                 # Add custom measurement type
 mfp weight delete-type <typeId>             # Delete measurement type
@@ -134,6 +144,7 @@ mfp water 2.5 --date 2026-04-10             # Log for specific date
 mfp exercise search "running"               # Search exercises
 mfp exercise list                            # List all exercises alphabetically
 mfp exercise my-exercises                    # List your custom exercises
+mfp exercise get <id>                        # Get exercise details by ID
 mfp exercise log <id> --duration 30          # Log 30 min exercise
 mfp exercise log <id> --duration 45 --calories 500  # Log with custom calories
 mfp exercise calories <id>                   # Get calories burned info
@@ -154,8 +165,13 @@ mfp goals update --calories 2000 --protein 150 --carbs 200 --fat 60  # Update go
 ```bash
 mfp account profile                          # View user profile
 mfp account settings                         # View diary settings
+mfp account update --username "newname"      # Update user profile
+mfp account update --data '{"key":"value"}'  # Update profile with raw JSON
+mfp account update-settings --data '{"key":"value"}'  # Update diary settings
+mfp account diary-profile                    # View diary profile
 mfp account digest                           # Weekly digest/summary
 mfp account digest --from 2026-04-01 --to 2026-04-07  # Custom date range
+mfp account report net calories 30           # Get a report (type, name, length)
 mfp account export                           # Request data export from MFP
 ```
 
