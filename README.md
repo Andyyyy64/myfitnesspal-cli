@@ -206,6 +206,27 @@ On error:
 }
 ```
 
+## Claude Code Skills
+
+Pre-built slash commands for [Claude Code](https://claude.com/claude-code) are available in the `skills/` directory.
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| `mfp-log` | `/mfp-log` | Log food from natural language ("ate 200g chicken breast") |
+| `mfp-diary` | `/mfp-diary` | View daily nutrition status and report |
+| `mfp-status` | `/mfp-status` | Overview of weight, food, water, and goals |
+| `mfp-weight` | `/mfp-weight` | Record weight and track progress |
+
+### Install skills
+
+Copy to your Claude Code commands directory:
+
+```bash
+cp skills/*.md ~/.claude/commands/
+```
+
+Then use `/mfp-log`, `/mfp-diary`, etc. as slash commands in Claude Code.
+
 ## Architecture
 
 ```
