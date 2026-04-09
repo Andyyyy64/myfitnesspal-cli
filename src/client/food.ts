@@ -64,9 +64,25 @@ function extractFoodItems(data: Record<string, unknown>): FoodItem[] {
   if (!pageProps) return [];
 
   const dehydrated = pageProps.dehydratedState as {
-    queries?: Array<{ state?: { data?: { items?: FoodItem[] } } }>;
+    queries?: Array<{
+      queryKey?: string[];
+      state?: {
+        data?: {
+          items?: Array<{ item?: FoodItem; [key: string]: unknown }>;
+        };
+      };
+    }>;
   };
-  if (!dehydrated?.queries?.[0]?.state?.data?.items) return [];
+  if (!dehydrated?.queries) return [];
 
-  return dehydrated.queries[0].state.data.items;
+  // Find the food query by its queryKey (first element is "food")
+  const foodQuery = dehydrated.queries.find(
+    (q) => Array.isArray(q.queryKey) && q.queryKey[0] === "food"
+  );
+  if (!foodQuery?.state?.data?.items) return [];
+
+  // Each item is wrapped in { item: FoodItem, ... }
+  return foodQuery.state.data.items
+    .map((entry) => entry.item)
+    .filter((item): item is FoodItem => item != null);
 }

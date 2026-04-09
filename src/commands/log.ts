@@ -52,7 +52,7 @@ export function registerLogCommand(program: Command): void {
             name: "selectedIndex",
             message: "Select a food:",
             choices: result.items.map((item: FoodItem, i: number) => ({
-              name: `${item.description} (${item.brand || "generic"}) - ${item.nutritional_contents.energy?.value ?? "?"}cal`,
+              name: `${item.description} (${item.brand_name || item.brand || "generic"}) - ${item.nutritional_contents.energy?.value ?? "?"}cal`,
               value: i,
             })),
           },

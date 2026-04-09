@@ -26,11 +26,18 @@ export interface ServingSize {
 export interface FoodItem {
   id: string;
   description: string;
+  brand_name?: string;
+  /** @deprecated Use brand_name instead */
   brand?: string;
   type: string;
   verified: boolean;
   nutritional_contents: NutritionalContents;
   serving_sizes: ServingSize[];
+  country_code?: string;
+  deleted?: boolean;
+  public?: boolean;
+  user_id?: string;
+  version?: string;
 }
 
 export interface DiaryEntry {

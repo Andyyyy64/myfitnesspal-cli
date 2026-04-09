@@ -24,5 +24,7 @@ export function todayStr(): string {
 }
 
 export function createTable(head: string[], colWidths?: number[]): Table.Table {
-  return new Table({ head, colWidths, style: { head: ["cyan"] } });
+  const opts: Table.TableConstructorOptions = { head, style: { head: ["cyan"] } };
+  if (colWidths) opts.colWidths = colWidths;
+  return new Table(opts);
 }

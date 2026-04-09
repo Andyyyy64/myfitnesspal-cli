@@ -38,7 +38,7 @@ export function registerSearchCommand(program: Command): void {
               i + 1,
               item.id,
               item.description.substring(0, 30),
-              (item.brand || "-").substring(0, 15),
+              (item.brand_name || item.brand || "-").substring(0, 15),
               nc.energy?.value ?? "-",
               nc.protein ?? "-",
               nc.carbohydrates ?? "-",
