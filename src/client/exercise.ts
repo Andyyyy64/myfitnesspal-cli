@@ -22,6 +22,19 @@ export async function searchExercises(
     (data as ExerciseSearchResult[]);
 }
 
+/**
+ * Log an exercise entry via the diary endpoint.
+ *
+ * The correct endpoint is POST /api/services/diary with type "exercise_entry".
+ * The body format: {items:[{type:"exercise_entry", date, exercise:{id,version}, quantity, energy:{value,unit}}]}
+ *
+ * Known issue: The MFP backend validates the "quantity" field for minutes but
+ * consistently rejects requests with "Quantity ^Please enter a valid number of minutes"
+ * regardless of field format (number, string, object). The exact body format the web
+ * frontend sends could not be determined — the web UI uses the same endpoint but the
+ * exercise creation code was not found in any inspected JS bundle. Exercise search,
+ * lookup, update, and delete all work correctly.
+ */
 export async function logExercise(
   config: AuthConfig,
   exercise: {
@@ -31,16 +44,31 @@ export async function logExercise(
     date: string;
   }
 ): Promise<ExerciseEntry> {
-  const res = await fetch(`${BASE_URL}/api/services/exercises`, {
+  const res = await fetch(`${BASE_URL}/api/services/diary`, {
     method: "POST",
     headers: makeHeaders(config),
-    body: JSON.stringify(exercise),
+    body: JSON.stringify({
+      items: [{
+        type: "exercise_entry",
+        date: exercise.date,
+        exercise: {
+          id: exercise.exercise_id,
+          version: exercise.exercise_id,
+        },
+        quantity: exercise.duration_minutes,
+        energy: exercise.calories_burned
+          ? { value: exercise.calories_burned, unit: "calories" }
+          : undefined,
+      }],
+    }),
   });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Failed to log exercise: ${res.status} - ${text}`);
   }
-  return (await res.json()) as ExerciseEntry;
+  const data = await res.json();
+  const items = (data as { items?: ExerciseEntry[] }).items;
+  return items?.[0] ?? (data as ExerciseEntry);
 }
 
 export async function deleteExercise(
