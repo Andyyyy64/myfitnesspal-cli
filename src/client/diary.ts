@@ -6,7 +6,7 @@ export async function readDiary(
   date: string
 ): Promise<DiaryEntry[]> {
   const res = await fetch(
-    `${BASE_URL}/api/services/diary/read_diary?date=${date}`,
+    `${BASE_URL}/api/services/diary/read_diary?entry_date=${date}&fields=all&types=food_entry`,
     { headers: makeHeaders(config) }
   );
   if (!res.ok) {
@@ -20,22 +20,37 @@ export async function createDiaryEntry(
   config: AuthConfig,
   entry: {
     food_id: string;
-    serving_size_id: string;
+    food_version?: string;
+    serving_size: { nutrition_multiplier: number; unit: string; value: number };
     servings: number;
-    meal_name: string;
-    entry_date: string;
+    meal_position: number;
+    date: string;
   }
 ): Promise<DiaryEntry> {
   const res = await fetch(`${BASE_URL}/api/services/diary`, {
     method: "POST",
     headers: makeHeaders(config),
-    body: JSON.stringify(entry),
+    body: JSON.stringify({
+      items: [{
+        type: "food_entry",
+        date: entry.date,
+        food: {
+          id: entry.food_id,
+          version: entry.food_version ?? entry.food_id,
+        },
+        servings: entry.servings,
+        meal_position: entry.meal_position,
+        serving_size: entry.serving_size,
+      }],
+    }),
   });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Failed to create diary entry: ${res.status} - ${text}`);
   }
-  return (await res.json()) as DiaryEntry;
+  const data = await res.json();
+  const items = (data as { items?: DiaryEntry[] }).items;
+  return items?.[0] ?? (data as DiaryEntry);
 }
 
 export async function deleteDiaryEntry(

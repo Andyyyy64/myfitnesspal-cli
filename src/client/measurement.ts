@@ -23,14 +23,15 @@ export async function upsertMeasurement(
     {
       method: "PUT",
       headers: makeHeaders(config),
-      body: JSON.stringify(measurement),
+      body: JSON.stringify({ items: [measurement] }),
     }
   );
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Failed to save measurement: ${res.status} - ${text}`);
   }
-  return (await res.json()) as MeasurementEntry;
+  const data = await res.json();
+  return (data as { items?: MeasurementEntry[] }).items?.[0] ?? (data as MeasurementEntry);
 }
 
 export async function deleteMeasurement(

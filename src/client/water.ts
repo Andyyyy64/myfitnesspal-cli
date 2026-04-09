@@ -20,7 +20,7 @@ export async function logWater(
   const res = await fetch(`${BASE_URL}/api/services/diary/water`, {
     method: "POST",
     headers: makeHeaders(config),
-    body: JSON.stringify(data),
+    body: JSON.stringify({ units: "cups", value: data.cups, date: data.date }),
   });
   if (!res.ok) {
     const text = await res.text();

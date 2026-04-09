@@ -109,10 +109,11 @@ export class MFPClient {
 
   async createDiaryEntry(entry: {
     food_id: string;
-    serving_size_id: string;
+    food_version?: string;
+    serving_size: { nutrition_multiplier: number; unit: string; value: number };
     servings: number;
-    meal_name: string;
-    entry_date: string;
+    meal_position: number;
+    date: string;
   }): Promise<DiaryEntry> {
     return createDiaryEntry(this.config, entry);
   }
