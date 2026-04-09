@@ -86,3 +86,9 @@ export async function updateExercise(config: AuthConfig, exerciseId: string, upd
   }
   return (await res.json()) as ExerciseEntry;
 }
+
+export async function getExerciseById(config: AuthConfig, exerciseId: string): Promise<ExerciseSearchResult> {
+  const res = await fetch(`${BASE_URL}/api/services/exercises/lookup/${exerciseId}`, { headers: makeReadHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to get exercise: ${res.status}`);
+  return (await res.json()) as ExerciseSearchResult;
+}

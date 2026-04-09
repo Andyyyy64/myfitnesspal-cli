@@ -59,3 +59,15 @@ export async function getWeeklyDigest(config: AuthConfig, fromDate: string, toDa
   if (!res.ok) throw new Error(`Failed to get weekly digest: ${res.status}`);
   return await res.json();
 }
+
+export async function getDiaryProfile(config: AuthConfig): Promise<unknown> {
+  const res = await fetch(`${BASE_URL}/api/services/diary/profile`, { headers: makeReadHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to get diary profile: ${res.status}`);
+  return await res.json();
+}
+
+export async function getReport(config: AuthConfig, reportType: string, reportName: string, reportLength: string): Promise<unknown> {
+  const res = await fetch(`${BASE_URL}/api/services/reports/results/${reportType}/${reportName}/${reportLength}`, { headers: makeReadHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to get report: ${res.status}`);
+  return await res.json();
+}

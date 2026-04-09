@@ -140,6 +140,55 @@ export function registerFoodCommand(program: Command): void {
       }
     });
 
+  food.command("update <foodId>")
+    .description("Update a custom food")
+    .option("--name <name>", "Food name")
+    .option("--brand <brand>", "Brand name")
+    .option("--calories <cal>", "Calories per serving")
+    .option("--protein <g>", "Protein (g)")
+    .option("--carbs <g>", "Carbohydrates (g)")
+    .option("--fat <g>", "Fat (g)")
+    .option("--data <json>", "Raw JSON data to update")
+    .option("--json", "Output as JSON")
+    .action(async (foodId: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in. Run `mfp login` first.", opts.json);
+          return;
+        }
+
+        const updates: Record<string, unknown> = {};
+        if (opts.name) updates.description = opts.name;
+        if (opts.brand) updates.brand_name = opts.brand;
+        if (opts.data) {
+          const parsed = JSON.parse(opts.data) as Record<string, unknown>;
+          Object.assign(updates, parsed);
+        }
+        // Build nutritional_contents if any nutrient flags provided
+        const nc: Record<string, unknown> = {};
+        if (opts.calories) nc.energy = { value: parseFloat(opts.calories), unit: "calories" };
+        if (opts.protein) nc.protein = parseFloat(opts.protein);
+        if (opts.carbs) nc.carbohydrates = parseFloat(opts.carbs);
+        if (opts.fat) nc.fat = parseFloat(opts.fat);
+        if (Object.keys(nc).length > 0) updates.nutritional_contents = nc;
+
+        if (Object.keys(updates).length === 0) {
+          outputError("No updates specified. Use --name, --calories, --protein, --carbs, --fat, or --data.", opts.json);
+          return;
+        }
+
+        const client = new MFPClient(config);
+        const result = await client.updateCustomFood(foodId, updates);
+
+        outputResult(result, opts.json, (item: FoodItem) => {
+          console.log(`Updated food: ${item.description} (ID: ${item.id})`);
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
   food.command("delete <foodId>")
     .description("Delete a custom food")
     .option("--json", "Output as JSON")

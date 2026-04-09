@@ -79,6 +79,56 @@ export function registerWeightCommand(program: Command): void {
     });
 
   weight
+    .command("get <id>")
+    .description("Get a measurement by ID")
+    .option("--json", "Output as JSON")
+    .action(async (id: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const entry = await client.getMeasurementById(id);
+        outputResult(entry, opts.json, (e: MeasurementEntry) => {
+          const table = createTable(["Field", "Value"]);
+          table.push(
+            ["ID", e.id],
+            ["Type", e.type],
+            ["Value", `${e.value} ${e.unit}`],
+            ["Date", e.date],
+            ["Updated", e.updated_at],
+          );
+          console.log(table.toString());
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  weight
+    .command("delete <id>")
+    .description("Delete a measurement by ID")
+    .option("--json", "Output as JSON")
+    .action(async (id: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        await client.deleteMeasurement(id);
+        outputResult({ deleted: id }, opts.json, () => {
+          console.log(`Deleted measurement ${id}.`);
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  weight
     .command("types")
     .description("List measurement types")
     .option("--json", "Output as JSON")

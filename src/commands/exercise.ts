@@ -171,6 +171,36 @@ export function registerExerciseCommand(program: Command): void {
     });
 
   exercise
+    .command("get <id>")
+    .description("Get exercise details by ID")
+    .option("--json", "Output as JSON")
+    .action(async (id: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const result = await client.getExerciseById(id);
+        outputResult(result, opts.json, (item) => {
+          const table = createTable(["Field", "Value"]);
+          table.push(
+            ["ID", item.id],
+            ["Name", item.description],
+            ["Type", item.type],
+          );
+          if (item.calories_per_minute !== undefined) {
+            table.push(["Cal/min", String(item.calories_per_minute)]);
+          }
+          console.log(table.toString());
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  exercise
     .command("delete <id>")
     .description("Delete an exercise entry")
     .option("--json", "Output as JSON")

@@ -69,6 +69,114 @@ export function registerDiaryCommand(program: Command): void {
     });
 
   diary
+    .command("day [date]")
+    .description("Show day metadata/status")
+    .option("--json", "Output as JSON")
+    .action(async (date: string | undefined, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const result = await client.readDiaryDay(date || todayStr());
+        outputResult(result, opts.json, (data: unknown) => {
+          console.log(JSON.stringify(data, null, 2));
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  diary
+    .command("goals [date]")
+    .description("Show diary-specific nutrient goals for a date")
+    .option("--json", "Output as JSON")
+    .action(async (date: string | undefined, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const result = await client.getDiaryNutrientGoals(date || todayStr());
+        outputResult(result, opts.json, (data: unknown) => {
+          console.log(JSON.stringify(data, null, 2));
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  diary
+    .command("get <entryId>")
+    .description("Get a single diary entry by ID")
+    .option("--json", "Output as JSON")
+    .action(async (entryId: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const entry = await client.getDiaryEntry(entryId);
+        outputResult(entry, opts.json, (e: DiaryEntry) => {
+          const nc = e.nutritional_contents;
+          const table = createTable(["Field", "Value"]);
+          table.push(
+            ["ID", e.id],
+            ["Food", e.food?.description || "Unknown"],
+            ["Meal", e.meal_name],
+            ["Servings", String(e.servings)],
+            ["Date", e.entry_date],
+            ["Calories", String(nc?.energy?.value ?? "-")],
+            ["Protein", `${nc?.protein ?? "-"} g`],
+            ["Carbs", `${nc?.carbohydrates ?? "-"} g`],
+            ["Fat", `${nc?.fat ?? "-"} g`],
+          );
+          console.log(table.toString());
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  diary
+    .command("report")
+    .description("Generate a diary report")
+    .requiredOption("--from <date>", "Start date (YYYY-MM-DD)")
+    .requiredOption("--to <date>", "End date (YYYY-MM-DD)")
+    .option("--data <json>", "Additional report parameters as JSON")
+    .option("--json", "Output as JSON")
+    .action(async (opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const reportData: Record<string, unknown> = {
+          from_date: opts.from,
+          to_date: opts.to,
+        };
+        if (opts.data) {
+          const parsed = JSON.parse(opts.data) as Record<string, unknown>;
+          Object.assign(reportData, parsed);
+        }
+        const client = new MFPClient(config);
+        const result = await client.generateDiaryReport(reportData);
+        outputResult(result, opts.json, (data: unknown) => {
+          console.log(JSON.stringify(data, null, 2));
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  diary
     .command("delete <id>")
     .description("Delete a diary entry")
     .option("--json", "Output as JSON")

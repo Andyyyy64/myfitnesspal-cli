@@ -1,5 +1,5 @@
 import type { AuthConfig, DiaryEntry } from "./types.js";
-import { BASE_URL, makeHeaders } from "./constants.js";
+import { BASE_URL, makeHeaders, makeReadHeaders } from "./constants.js";
 
 export async function readDiary(
   config: AuthConfig,
@@ -126,5 +126,33 @@ export async function completeDiaryDay(
     const text = await res.text();
     throw new Error(`Failed to complete diary day: ${res.status} - ${text}`);
   }
+  return await res.json();
+}
+
+export async function readDiaryDay(config: AuthConfig, date: string): Promise<unknown> {
+  const res = await fetch(`${BASE_URL}/api/services/diary/read_day?date=${date}`, { headers: makeHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to read diary day: ${res.status}`);
+  return await res.json();
+}
+
+export async function getDiaryNutrientGoals(config: AuthConfig, date: string): Promise<unknown> {
+  const res = await fetch(`${BASE_URL}/api/services/diary/nutrient_goals?date=${date}`, { headers: makeHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to get diary nutrient goals: ${res.status}`);
+  return await res.json();
+}
+
+export async function getDiaryEntry(config: AuthConfig, entryId: string): Promise<DiaryEntry> {
+  const res = await fetch(`${BASE_URL}/api/services/diary/${entryId}`, { headers: makeHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to get diary entry: ${res.status}`);
+  return (await res.json()) as DiaryEntry;
+}
+
+export async function generateDiaryReport(config: AuthConfig, data: Record<string, unknown>): Promise<unknown> {
+  const res = await fetch(`${BASE_URL}/api/services/diary/report`, {
+    method: "POST",
+    headers: makeHeaders(config),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(`Failed to generate diary report: ${res.status}`);
   return await res.json();
 }

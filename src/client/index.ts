@@ -19,6 +19,10 @@ import {
   addDiaryNote,
   copyMeal,
   completeDiaryDay,
+  readDiaryDay,
+  getDiaryNutrientGoals,
+  getDiaryEntry,
+  generateDiaryReport,
 } from "./diary.js";
 import { searchFood, fetchBuildId } from "./food.js";
 import {
@@ -28,6 +32,7 @@ import {
   getMeasurementTypes,
   createMeasurementType,
   deleteMeasurementType,
+  getMeasurementById,
 } from "./measurement.js";
 import { readWater, logWater } from "./water.js";
 import {
@@ -38,6 +43,7 @@ import {
   lookupPrivateExercises,
   getCaloriesBurned,
   updateExercise,
+  getExerciseById,
 } from "./exercise.js";
 import type { ExerciseSearchResult } from "./exercise.js";
 import { getNutrientGoals, updateNutrientGoals } from "./goals.js";
@@ -57,6 +63,8 @@ import {
   updateUserProfile,
   requestDataExport,
   getWeeklyDigest,
+  getDiaryProfile,
+  getReport,
 } from "./account.js";
 import type { SavedMeal } from "./meals.js";
 import { saveAuth } from "../utils/config.js";
@@ -273,6 +281,38 @@ export class MFPClient {
 
   async getWeeklyDigest(fromDate: string, toDate: string): Promise<unknown> {
     return getWeeklyDigest(this.config, fromDate, toDate);
+  }
+
+  async getDiaryProfile(): Promise<unknown> {
+    return getDiaryProfile(this.config);
+  }
+
+  async getReport(reportType: string, reportName: string, reportLength: string): Promise<unknown> {
+    return getReport(this.config, reportType, reportName, reportLength);
+  }
+
+  async readDiaryDay(date: string): Promise<unknown> {
+    return readDiaryDay(this.config, date);
+  }
+
+  async getDiaryNutrientGoals(date: string): Promise<unknown> {
+    return getDiaryNutrientGoals(this.config, date);
+  }
+
+  async getDiaryEntry(entryId: string): Promise<DiaryEntry> {
+    return getDiaryEntry(this.config, entryId);
+  }
+
+  async generateDiaryReport(data: Record<string, unknown>): Promise<unknown> {
+    return generateDiaryReport(this.config, data);
+  }
+
+  async getExerciseById(exerciseId: string): Promise<ExerciseSearchResult> {
+    return getExerciseById(this.config, exerciseId);
+  }
+
+  async getMeasurementById(id: string): Promise<MeasurementEntry> {
+    return getMeasurementById(this.config, id);
   }
 
   static async login(
