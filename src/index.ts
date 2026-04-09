@@ -4,6 +4,10 @@ import { registerAuthCommands } from "./commands/auth.js";
 import { registerSearchCommand } from "./commands/search.js";
 import { registerDiaryCommand } from "./commands/diary.js";
 import { registerLogCommand } from "./commands/log.js";
+import { registerWeightCommand } from "./commands/weight.js";
+import { registerWaterCommand } from "./commands/water.js";
+import { registerExerciseCommand } from "./commands/exercise.js";
+import { registerGoalsCommand } from "./commands/goals.js";
 
 const program = new Command();
 
@@ -16,5 +20,9 @@ registerAuthCommands(program);
 registerSearchCommand(program);
 registerDiaryCommand(program);
 registerLogCommand(program);
+registerWeightCommand(program);
+registerWaterCommand(program);
+registerExerciseCommand(program);
+registerGoalsCommand(program);
 
 program.parse();
