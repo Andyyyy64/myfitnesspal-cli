@@ -17,75 +17,216 @@ npm install
 ### Option 1: Login with credentials
 
 ```bash
-mfp login
+npx tsx src/index.ts login
+```
+
+You'll be prompted for your email and password. You can also pass them directly:
+
+```bash
+npx tsx src/index.ts login --email you@example.com --password yourpass
 ```
 
 ### Option 2: Set session cookie manually
 
-Copy `__Secure-next-auth.session-token` from your browser (DevTools → Application → Cookies):
+If login doesn't work (e.g. Cloudflare challenge), copy `__Secure-next-auth.session-token` from your browser:
+
+1. Open https://www.myfitnesspal.com and log in
+2. Open DevTools (F12) → Application → Cookies → `www.myfitnesspal.com`
+3. Copy the value of `__Secure-next-auth.session-token`
 
 ```bash
-mfp auth set-cookie "eyJhbG..."
+npx tsx src/index.ts auth set-cookie "eyJhbG..."
 ```
 
-## Commands
+### Check auth status
 
-### Authentication
 ```bash
-mfp login                          # Login with email/password
-mfp auth set-cookie <token>        # Set session cookie manually
-mfp auth status                    # Check auth status
+npx tsx src/index.ts auth status
 ```
+
+## Usage
+
+All commands below use `npx tsx src/index.ts` as the prefix. If you build with `npm run build`, you can use `node dist/index.js` or link globally.
+
+All commands support `--json` for structured JSON output (useful for AI agents and scripting).
+
+---
 
 ### Food Search
+
 ```bash
-mfp search "chicken breast"        # Search for foods
-mfp search "おにぎり" --per-page 5  # Japanese food search
+mfp search <query>                          # Search for foods
+mfp search "chicken breast" --per-page 10   # Limit results
+mfp search "おにぎり" --page 1               # Pagination
 ```
 
 ### Food Logging
+
 ```bash
-mfp log "chicken breast"           # Interactive: search → select → log
-mfp log <foodId> --serving-size <id> --servings 2 --meal lunch  # Programmatic
+mfp log "chicken breast"                    # Interactive: search → select → log
+mfp log "rice" 2 --meal dinner              # Interactive with 2 servings
+mfp log <foodId> --serving-size <id> --servings 2 --meal lunch  # Programmatic (for AI agents)
 ```
 
-### Diary
+Options: `--meal` (breakfast/lunch/dinner/snack), `--date`, `--serving-size`, `--servings`
+
+### Food Diary
+
 ```bash
-mfp diary                          # View today's diary
-mfp diary 2026-04-09               # View specific date
-mfp diary delete <entryId>         # Delete an entry
+mfp diary                                   # View today's diary
+mfp diary 2026-04-09                        # View specific date
+mfp diary delete <entryId>                  # Delete an entry
+mfp diary update <entryId> --servings 3     # Update servings
+mfp diary update <entryId> --meal dinner    # Move to different meal
+mfp diary notes                             # View today's food notes
+mfp diary notes 2026-04-09                  # View notes for specific date
+mfp diary add-note "Felt good today"        # Add a food note
+mfp diary copy --from-date 2026-04-08 --to-date 2026-04-09 --from-meal lunch --to-meal lunch  # Copy meal
+mfp diary complete                          # Complete today's diary
+mfp diary complete 2026-04-09               # Complete specific date
 ```
 
-### Weight
+### Food Management
+
 ```bash
-mfp weight                         # Show latest weight
-mfp weight 106.3                   # Record weight
-mfp weight --history --limit 30    # Show weight history
+mfp food get <foodId>                       # Get food details by ID
+mfp food my-foods                           # List your custom foods
+mfp food create --name "My Protein Shake" --calories 250 --protein 30 --carbs 10 --fat 5  # Create custom food
+mfp food create --name "Homemade Bread" --calories 120 --brand "Homemade" --serving-unit "slice" --serving-size 1
+mfp food delete <foodId>                    # Delete a custom food
+mfp food recent                             # Recently used foods
+mfp food recent --days 7                    # Last 7 days
+mfp food frequent                           # Frequently used foods
+mfp food frequent --days 90                 # Last 90 days
+```
+
+### Saved Meals
+
+```bash
+mfp meals list                              # List saved meals
+mfp meals delete <mealId>                   # Delete a saved meal
+```
+
+### Weight & Measurements
+
+```bash
+mfp weight                                  # Show latest weight
+mfp weight 106.3                            # Record weight (kg)
+mfp weight 105.0 --date 2026-04-10          # Record for specific date
+mfp weight --history                        # Show weight history
+mfp weight --history --limit 30             # Last 30 entries
+mfp weight types                            # List measurement types (Neck, Waist, etc.)
+mfp weight add-type "Chest"                 # Add custom measurement type
+mfp weight delete-type <typeId>             # Delete measurement type
 ```
 
 ### Water
+
 ```bash
-mfp water                          # Show today's water intake
-mfp water 8                        # Log 8 cups of water
+mfp water                                   # Show today's water intake
+mfp water 8                                 # Log 8 cups of water
+mfp water 2.5 --date 2026-04-10             # Log for specific date
 ```
 
 ### Exercise
+
 ```bash
-mfp exercise search "running"      # Search exercises
-mfp exercise log <id> --duration 30 --calories 300  # Log exercise
+mfp exercise search "running"               # Search exercises
+mfp exercise list                            # List all exercises alphabetically
+mfp exercise my-exercises                    # List your custom exercises
+mfp exercise log <id> --duration 30          # Log 30 min exercise
+mfp exercise log <id> --duration 45 --calories 500  # Log with custom calories
+mfp exercise calories <id>                   # Get calories burned info
+mfp exercise update <id> --duration 60       # Update duration
+mfp exercise delete <id>                     # Delete exercise entry
 ```
 
-### Goals
+### Nutrient Goals
+
 ```bash
-mfp goals                          # Show nutrient goals
+mfp goals                                   # View current nutrient goals
+mfp goals --date 2026-04-09                  # View goals for specific date
+mfp goals update --calories 2000 --protein 150 --carbs 200 --fat 60  # Update goals
 ```
 
-### JSON Output (for AI agents)
+### Account & Settings
+
+```bash
+mfp account profile                          # View user profile
+mfp account settings                         # View diary settings
+mfp account digest                           # Weekly digest/summary
+mfp account digest --from 2026-04-01 --to 2026-04-07  # Custom date range
+mfp account export                           # Request data export from MFP
+```
+
+---
+
+## JSON Output (for AI agents)
+
 All commands support `--json` for structured output:
+
 ```bash
 mfp diary --json
 mfp search "rice" --json
+mfp weight --history --json
+mfp goals --json
 ```
+
+JSON responses follow this format:
+
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+On error:
+
+```json
+{
+  "success": false,
+  "error": "Error message"
+}
+```
+
+## Architecture
+
+```
+src/
+├── client/           # Core SDK (API layer)
+│   ├── index.ts      # MFPClient class (facade)
+│   ├── constants.ts  # Shared constants (BASE_URL, headers)
+│   ├── types.ts      # TypeScript interfaces
+│   ├── auth.ts       # Authentication
+│   ├── food.ts       # Food search (buildId handling)
+│   ├── foods.ts      # Food management (CRUD, top foods)
+│   ├── diary.ts      # Diary CRUD + notes, copy, complete
+│   ├── exercise.ts   # Exercise search, log, lookup
+│   ├── measurement.ts # Weight & measurement types
+│   ├── water.ts      # Water intake
+│   ├── goals.ts      # Nutrient goals
+│   ├── meals.ts      # Saved meals
+│   └── account.ts    # Profile, settings, digest, export
+├── commands/         # CLI layer (commander)
+│   ├── auth.ts       # login, auth set-cookie, auth status
+│   ├── search.ts     # search
+│   ├── log.ts        # log (interactive + programmatic)
+│   ├── diary.ts      # diary view, delete, update, notes, copy, complete
+│   ├── food.ts       # food get, my-foods, create, delete, recent, frequent
+│   ├── meals.ts      # meals list, delete
+│   ├── weight.ts     # weight record, history, measurement types
+│   ├── water.ts      # water log, view
+│   ├── exercise.ts   # exercise search, list, log, calories, update, delete
+│   ├── goals.ts      # goals view, update
+│   └── account.ts    # profile, settings, digest, export
+├── utils/
+│   ├── config.ts     # ~/.config/mfp-cli/auth.json management
+│   └── output.ts     # Table/JSON output, todayStr helper
+└── index.ts          # CLI entrypoint
+```
+
+The Core SDK (`src/client/`) can be imported directly for programmatic use or future MCP server integration.
 
 ## How It Works
 
