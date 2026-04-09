@@ -78,5 +78,6 @@ export async function deleteMeasurementType(config: AuthConfig, typeId: string):
 export async function getMeasurementById(config: AuthConfig, id: string): Promise<MeasurementEntry> {
   const res = await fetch(`${BASE_URL}/api/user-measurements/measurements/${id}`, { headers: makeReadHeaders(config) });
   if (!res.ok) throw new Error(`Failed to get measurement: ${res.status}`);
-  return (await res.json()) as MeasurementEntry;
+  const data = await res.json();
+  return (data as { item: MeasurementEntry }).item ?? (data as MeasurementEntry);
 }
