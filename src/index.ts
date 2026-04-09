@@ -10,6 +10,7 @@ import { registerExerciseCommand } from "./commands/exercise.js";
 import { registerGoalsCommand } from "./commands/goals.js";
 import { registerFoodCommand } from "./commands/food.js";
 import { registerMealsCommand } from "./commands/meals.js";
+import { registerAccountCommand } from "./commands/account.js";
 
 const program = new Command();
 
@@ -28,5 +29,6 @@ registerExerciseCommand(program);
 registerGoalsCommand(program);
 registerFoodCommand(program);
 registerMealsCommand(program);
+registerAccountCommand(program);
 
 program.parse();

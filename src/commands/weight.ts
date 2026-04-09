@@ -5,7 +5,7 @@ import { outputResult, outputError, createTable, todayStr } from "../utils/outpu
 import type { MeasurementEntry } from "../client/types.js";
 
 export function registerWeightCommand(program: Command): void {
-  program
+  const weight = program
     .command("weight [value]")
     .description("Record or view weight (kg)")
     .option("--date <date>", "Date (YYYY-MM-DD)", todayStr())
@@ -73,6 +73,78 @@ export function registerWeightCommand(program: Command): void {
             }
           );
         }
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  weight
+    .command("types")
+    .description("List measurement types")
+    .option("--json", "Output as JSON")
+    .action(async (opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const types = await client.getMeasurementTypes();
+        outputResult(types, opts.json, (items: unknown[]) => {
+          if (items.length === 0) {
+            console.log("No measurement types found.");
+            return;
+          }
+          const table = createTable(["ID", "Name"]);
+          for (const item of items) {
+            const t = item as Record<string, unknown>;
+            table.push([String(t.id ?? ""), String(t.name ?? "")]);
+          }
+          console.log(table.toString());
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  weight
+    .command("add-type <name>")
+    .description("Create a measurement type")
+    .option("--json", "Output as JSON")
+    .action(async (name: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const result = await client.createMeasurementType({ name });
+        outputResult(result, opts.json, () => {
+          console.log(`Measurement type "${name}" created.`);
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  weight
+    .command("delete-type <id>")
+    .description("Delete a measurement type")
+    .option("--json", "Output as JSON")
+    .action(async (id: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        await client.deleteMeasurementType(id);
+        outputResult({ deleted: id }, opts.json, () => {
+          console.log(`Measurement type ${id} deleted.`);
+        });
       } catch (err) {
         outputError((err as Error).message, opts.json);
       }

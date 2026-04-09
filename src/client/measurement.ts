@@ -1,5 +1,5 @@
 import type { AuthConfig, MeasurementEntry } from "./types.js";
-import { BASE_URL, makeHeaders } from "./constants.js";
+import { BASE_URL, makeHeaders, makeReadHeaders } from "./constants.js";
 
 export async function getMeasurements(
   config: AuthConfig
@@ -45,4 +45,32 @@ export async function deleteMeasurement(
     }
   );
   if (!res.ok) throw new Error(`Failed to delete measurement: ${res.status}`);
+}
+
+export async function getMeasurementTypes(config: AuthConfig): Promise<unknown[]> {
+  const res = await fetch(`${BASE_URL}/api/user-measurements/measurements/types`, { headers: makeReadHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to get measurement types: ${res.status}`);
+  const data = await res.json();
+  return Array.isArray(data) ? data : (data as { items?: unknown[] }).items ?? [];
+}
+
+export async function createMeasurementType(config: AuthConfig, type: { name: string }): Promise<unknown> {
+  const res = await fetch(`${BASE_URL}/api/user-measurements/measurements/types`, {
+    method: "POST",
+    headers: makeHeaders(config),
+    body: JSON.stringify(type),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to create measurement type: ${res.status} - ${text}`);
+  }
+  return await res.json();
+}
+
+export async function deleteMeasurementType(config: AuthConfig, typeId: string): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/user-measurements/measurements/types/${typeId}`, {
+    method: "DELETE",
+    headers: makeHeaders(config),
+  });
+  if (!res.ok) throw new Error(`Failed to delete measurement type: ${res.status}`);
 }

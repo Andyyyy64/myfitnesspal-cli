@@ -25,6 +25,9 @@ import {
   getMeasurements,
   upsertMeasurement,
   deleteMeasurement,
+  getMeasurementTypes,
+  createMeasurementType,
+  deleteMeasurementType,
 } from "./measurement.js";
 import { readWater, logWater } from "./water.js";
 import {
@@ -37,7 +40,7 @@ import {
   updateExercise,
 } from "./exercise.js";
 import type { ExerciseSearchResult } from "./exercise.js";
-import { getNutrientGoals } from "./goals.js";
+import { getNutrientGoals, updateNutrientGoals } from "./goals.js";
 import {
   getFoodById,
   getMyFoods,
@@ -47,6 +50,14 @@ import {
   getTopFoods,
 } from "./foods.js";
 import { getSavedMeals, deleteSavedMeal } from "./meals.js";
+import {
+  getDiarySettings,
+  updateDiarySettings,
+  getUserProfile,
+  updateUserProfile,
+  requestDataExport,
+  getWeeklyDigest,
+} from "./account.js";
 import type { SavedMeal } from "./meals.js";
 import { saveAuth } from "../utils/config.js";
 
@@ -222,6 +233,46 @@ export class MFPClient {
 
   async deleteSavedMeal(mealId: string): Promise<void> {
     return deleteSavedMeal(this.config, mealId);
+  }
+
+  async getMeasurementTypes(): Promise<unknown[]> {
+    return getMeasurementTypes(this.config);
+  }
+
+  async createMeasurementType(type: { name: string }): Promise<unknown> {
+    return createMeasurementType(this.config, type);
+  }
+
+  async deleteMeasurementType(typeId: string): Promise<void> {
+    return deleteMeasurementType(this.config, typeId);
+  }
+
+  async updateNutrientGoals(goals: Record<string, unknown>): Promise<unknown> {
+    return updateNutrientGoals(this.config, goals);
+  }
+
+  async getDiarySettings(): Promise<unknown> {
+    return getDiarySettings(this.config);
+  }
+
+  async updateDiarySettings(settings: Record<string, unknown>): Promise<unknown> {
+    return updateDiarySettings(this.config, settings);
+  }
+
+  async getUserProfile(): Promise<unknown> {
+    return getUserProfile(this.config);
+  }
+
+  async updateUserProfile(updates: Record<string, unknown>): Promise<unknown> {
+    return updateUserProfile(this.config, updates);
+  }
+
+  async requestDataExport(): Promise<unknown> {
+    return requestDataExport(this.config);
+  }
+
+  async getWeeklyDigest(fromDate: string, toDate: string): Promise<unknown> {
+    return getWeeklyDigest(this.config, fromDate, toDate);
   }
 
   static async login(
