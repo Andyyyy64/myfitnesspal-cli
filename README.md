@@ -1,16 +1,15 @@
 # myfitnesspal-cli
 
-CLI for MyFitnessPal — reverse-engineered internal API.
+> **Unofficial** — This project is not affiliated with or endorsed by MyFitnessPal.
+
+CLI for MyFitnessPal internal API.
 
 ## Install
 
 ```bash
-npm install -g myfitnesspal-cli
-```
-
-Or run directly:
-```bash
-npx myfitnesspal-cli
+git clone https://github.com/Andyyyy64/myfitnesspal-cli.git
+cd myfitnesspal-cli
+npm install
 ```
 
 ## Setup
@@ -92,7 +91,7 @@ mfp search "rice" --json
 
 This CLI uses MyFitnessPal's internal web API (the same endpoints the website uses). Authentication is via session cookies from the Next.js/next-auth stack.
 
-**Note:** This is an unofficial tool. MFP may change their internal API at any time.
+**Disclaimer:** This is an unofficial, reverse-engineered tool. It is not affiliated with, endorsed by, or associated with MyFitnessPal in any way. MFP may change their internal API at any time, which could break this tool without notice. Use at your own risk.
 
 ## License
 
