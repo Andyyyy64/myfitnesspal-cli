@@ -1,5 +1,6 @@
-import type { AuthConfig, FoodItem, SessionInfo } from "./types.js";
+import type { AuthConfig, DiaryEntry, FoodItem, SessionInfo } from "./types.js";
 import { getSession, getCsrfToken, loginWithCredentials } from "./auth.js";
+import { readDiary, createDiaryEntry, deleteDiaryEntry } from "./diary.js";
 import { searchFood, fetchBuildId } from "./food.js";
 import { saveAuth } from "../utils/config.js";
 
@@ -35,6 +36,24 @@ export class MFPClient {
       await saveAuth(this.config);
     }
     return result;
+  }
+
+  async readDiary(date: string): Promise<DiaryEntry[]> {
+    return readDiary(this.config, date);
+  }
+
+  async createDiaryEntry(entry: {
+    food_id: string;
+    serving_size_id: string;
+    servings: number;
+    meal_name: string;
+    entry_date: string;
+  }): Promise<DiaryEntry> {
+    return createDiaryEntry(this.config, entry);
+  }
+
+  async deleteDiaryEntry(entryId: string): Promise<void> {
+    return deleteDiaryEntry(this.config, entryId);
   }
 
   static async login(

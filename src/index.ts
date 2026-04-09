@@ -2,6 +2,8 @@
 import { Command } from "commander";
 import { registerAuthCommands } from "./commands/auth.js";
 import { registerSearchCommand } from "./commands/search.js";
+import { registerDiaryCommand } from "./commands/diary.js";
+import { registerLogCommand } from "./commands/log.js";
 
 const program = new Command();
 
@@ -12,5 +14,7 @@ program
 
 registerAuthCommands(program);
 registerSearchCommand(program);
+registerDiaryCommand(program);
+registerLogCommand(program);
 
 program.parse();
