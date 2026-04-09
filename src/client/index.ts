@@ -31,6 +31,10 @@ import {
   searchExercises,
   logExercise,
   deleteExercise,
+  lookupExercises,
+  lookupPrivateExercises,
+  getCaloriesBurned,
+  updateExercise,
 } from "./exercise.js";
 import type { ExerciseSearchResult } from "./exercise.js";
 import { getNutrientGoals } from "./goals.js";
@@ -161,6 +165,22 @@ export class MFPClient {
 
   async deleteExercise(id: string): Promise<void> {
     return deleteExercise(this.config, id);
+  }
+
+  async lookupExercises(): Promise<ExerciseSearchResult[]> {
+    return lookupExercises(this.config);
+  }
+
+  async lookupPrivateExercises(): Promise<ExerciseSearchResult[]> {
+    return lookupPrivateExercises(this.config);
+  }
+
+  async getCaloriesBurned(exerciseId: string): Promise<unknown> {
+    return getCaloriesBurned(this.config, exerciseId);
+  }
+
+  async updateExercise(exerciseId: string, updates: Record<string, unknown>): Promise<ExerciseEntry> {
+    return updateExercise(this.config, exerciseId, updates);
   }
 
   async getNutrientGoals(date?: string): Promise<NutrientGoals> {

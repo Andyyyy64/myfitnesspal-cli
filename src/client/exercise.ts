@@ -1,5 +1,5 @@
 import type { AuthConfig, ExerciseEntry } from "./types.js";
-import { BASE_URL, makeHeaders } from "./constants.js";
+import { BASE_URL, makeHeaders, makeReadHeaders } from "./constants.js";
 
 export interface ExerciseSearchResult {
   id: string;
@@ -52,4 +52,37 @@ export async function deleteExercise(
     headers: makeHeaders(config),
   });
   if (!res.ok) throw new Error(`Failed to delete exercise: ${res.status}`);
+}
+
+export async function lookupExercises(config: AuthConfig): Promise<ExerciseSearchResult[]> {
+  const res = await fetch(`${BASE_URL}/api/services/exercises/lookup`, { headers: makeReadHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to lookup exercises: ${res.status}`);
+  const data = await res.json();
+  return (data as { items?: ExerciseSearchResult[] }).items ?? (data as ExerciseSearchResult[]);
+}
+
+export async function lookupPrivateExercises(config: AuthConfig): Promise<ExerciseSearchResult[]> {
+  const res = await fetch(`${BASE_URL}/api/services/exercises/lookup_private`, { headers: makeReadHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to lookup private exercises: ${res.status}`);
+  const data = await res.json();
+  return (data as { items?: ExerciseSearchResult[] }).items ?? (data as ExerciseSearchResult[]);
+}
+
+export async function getCaloriesBurned(config: AuthConfig, exerciseId: string): Promise<unknown> {
+  const res = await fetch(`${BASE_URL}/api/services/exercises/calories_burned/${exerciseId}`, { headers: makeReadHeaders(config) });
+  if (!res.ok) throw new Error(`Failed to get calories burned: ${res.status}`);
+  return await res.json();
+}
+
+export async function updateExercise(config: AuthConfig, exerciseId: string, updates: Record<string, unknown>): Promise<ExerciseEntry> {
+  const res = await fetch(`${BASE_URL}/api/services/exercises/${exerciseId}`, {
+    method: "PUT",
+    headers: makeHeaders(config),
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to update exercise: ${res.status} - ${text}`);
+  }
+  return (await res.json()) as ExerciseEntry;
 }
