@@ -16,6 +16,22 @@ export async function getNutrientGoals(
   return goals as NutrientGoals;
 }
 
+/**
+ * Update nutrient goals.
+ *
+ * The MFP web frontend updates goals via PATCH /api/services/users (user profile),
+ * not via POST /api/services/nutrient-goals. The nutrient-goals POST endpoint exists
+ * but requires a specific "OneCycleItem" Java deserialization format that could not
+ * be reverse-engineered. All attempted body formats return 422 "json request body
+ * malformed".
+ *
+ * The GET response structure is:
+ *   [{valid_from, valid_to, daily_goals: [{day_of_week, group_id, energy:{value,unit}, ...}], default_goal: {...}}]
+ *
+ * This function currently attempts the POST endpoint and will fail with 422.
+ * A future fix should use PATCH /api/services/users with the correct permitted
+ * parameters for goal updates.
+ */
 export async function updateNutrientGoals(config: AuthConfig, goals: Record<string, unknown>): Promise<unknown> {
   const res = await fetch(`${BASE_URL}/api/services/nutrient-goals`, {
     method: "POST",
