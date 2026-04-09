@@ -65,10 +65,10 @@ mfp search "おにぎり" --page 1               # Pagination
 ```bash
 mfp log "chicken breast"                    # Interactive: search → select → log
 mfp log "rice" 2 --meal dinner              # Interactive with 2 servings
-mfp log <foodId> --serving-size <id> --servings 2 --meal lunch  # Programmatic (for AI agents)
+mfp log <foodId> --serving-index <n> --servings 2 --meal lunch  # Programmatic (for AI agents)
 ```
 
-Options: `--meal` (breakfast/lunch/dinner/snack), `--date`, `--serving-size`, `--servings`
+Options: `--meal` (breakfast/lunch/dinner/snack), `--date`, `--serving-index` (0-based index into food's serving_sizes array), `--servings`
 
 ### Food Diary
 

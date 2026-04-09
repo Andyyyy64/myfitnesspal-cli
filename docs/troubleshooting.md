@@ -85,6 +85,20 @@ mfp goals --json
 
 If these work, your service session is valid.
 
+## Two Session Types
+
+MFP uses two separate session systems:
+
+1. **next-auth session** (`/api/auth/session`) - Shorter lifetime. Required for food search via `/_next/data/` endpoint. When this expires, `auth status` shows empty and food search stops working.
+
+2. **Service session** (`/api/services/*`) - Longer lifetime. Used by all other commands (diary, weight, water, goals, exercises, etc.). Can remain valid after the next-auth session expires.
+
+If food search returns empty results but other commands work fine, your service session is still valid but the next-auth session has expired. Re-authenticate with a fresh browser cookie to fix food search.
+
+### Food search requires fresh session
+
+The food search endpoint (`/_next/data/{buildId}/...`) requires an active next-auth session. If your session was set via `auth set-cookie` and only the service session is alive, food search will return empty results or redirect to logout. Re-copy the cookie from your browser.
+
 ## Known Limitations
 
 - **No OAuth flow** - MFP's partner API requires approval. This tool uses session cookies.
@@ -92,3 +106,5 @@ If these work, your service session is valid.
 - **Cloudflare** - Automated login may fail if Cloudflare challenges the request.
 - **Rate limiting** - MFP may rate-limit requests. No built-in rate limiting in the CLI.
 - **API instability** - Internal APIs can change without notice on any MFP deployment.
+- **Exercise logging** - The exercise log POST endpoint (`POST /api/services/diary` with `type: "exercise_entry"`) is not fully working. The backend consistently rejects the request body with a "quantity" validation error. Exercise search, lookup, get, update, and delete all work.
+- **Nutrient goals update** - The `POST /api/services/nutrient-goals` endpoint returns 422 for all attempted body formats. The MFP web frontend updates goals via `PATCH /api/services/users` instead. Read-only access to goals works fine.

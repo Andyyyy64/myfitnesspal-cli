@@ -93,7 +93,7 @@ All MFP internal API endpoints used by this CLI, grouped by domain.
 | GET | `/api/services/exercises/lookup/{id}` | Get exercise details |
 | GET | `/api/services/exercises/lookup_private` | List custom/private exercises |
 | GET | `/api/services/exercises/calories_burned/{id}` | Calories burned calculation |
-| POST | `/api/services/exercises` | Log exercise |
+| POST | `/api/services/diary` | Log exercise (type: exercise_entry) **[not working - see body formats]** |
 | PUT | `/api/services/exercises/{id}` | Update exercise entry |
 | DELETE | `/api/services/exercises/{id}` | Delete exercise entry |
 
@@ -124,6 +124,86 @@ All MFP internal API endpoints used by this CLI, grouped by domain.
 | GET | `/api/services/live-digest?from-date=YYYY-MM-DD&to-date=YYYY-MM-DD` | Weekly digest/summary |
 | GET | `/api/services/reports/results/{type}/{name}/{length}` | Reports |
 
+## Request Body Formats
+
+### POST /api/services/diary (create food entry)
+
+```json
+{
+  "items": [{
+    "type": "food_entry",
+    "date": "YYYY-MM-DD",
+    "food": { "id": "<foodId>", "version": "<foodId>" },
+    "servings": 1,
+    "meal_position": 0,
+    "serving_size": {
+      "nutrition_multiplier": 1,
+      "unit": "cup",
+      "value": 1
+    }
+  }]
+}
+```
+
+`meal_position`: 0=breakfast, 1=lunch, 2=dinner, 3=snack.
+
+### POST /api/services/diary (create exercise entry)
+
+**Status: Not working.** The endpoint accepts `type: "exercise_entry"` but the exact body format for the `quantity` (duration in minutes) field could not be determined. The backend validates with "Quantity ^Please enter a valid number of minutes" regardless of format. Exercise search, lookup, update (PUT), and delete all work.
+
+### PATCH /api/services/diary/{entryId} (update diary entry)
+
+```json
+{ "servings": 2 }
+```
+
+or
+
+```json
+{ "meal_name": "Dinner" }
+```
+
+### PUT /api/services/diary/{entryId} (full update)
+
+```json
+{ "item": { /* full entry object */ } }
+```
+
+### POST /api/services/diary/water
+
+```json
+{ "date": "YYYY-MM-DD", "units": "cups", "value": 8 }
+```
+
+The `units` field can be `"cups"` or `"milliliters"`. The web frontend uses `"milliliters"`.
+
+### PUT /api/user-measurements/measurements
+
+```json
+{
+  "items": [{
+    "type": "Weight",
+    "value": 106.3,
+    "unit": "kg",
+    "date": "YYYY-MM-DD"
+  }]
+}
+```
+
+### POST /api/services/nutrient-goals
+
+**Status: Not working.** The endpoint exists but returns 422 for all attempted body formats. The MFP web frontend updates nutrient goals via `PATCH /api/services/users` (user profile patch) instead of this endpoint. The GET endpoint works and returns:
+
+```json
+[{
+  "valid_from": "YYYY-MM-DD",
+  "valid_to": "YYYY-MM-DD",
+  "daily_goals": [{ "day_of_week": "monday", "group_id": 0, "energy": {"value": 2000, "unit": "calories"}, "carbohydrates": 250, "protein": 100, "fat": 67, ... }],
+  "default_group_id": 0,
+  "default_goal": { ... }
+}]
+```
+
 ## Response patterns
 
 Most `/api/services/*` endpoints return data directly as JSON. Some wrap in `{item: ...}` or `{items: [...]}`.
@@ -135,3 +215,5 @@ The food search endpoint (`/_next/data/`) returns Next.js dehydrated state with 
 - **401/403** - Session expired, re-authenticate
 - **404** - Resource not found or API changed
 - **307 redirect to /account/logout** - Session invalid (food search)
+- **400 with `error_details.item_error`** - Validation error with field-specific messages (^ separates field name from error)
+- **422 "json request body malformed"** - Request body doesn't match expected Java deserialization schema
