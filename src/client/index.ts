@@ -10,7 +10,16 @@ import type {
   WaterEntry,
 } from "./types.js";
 import { getSession, getCsrfToken, loginWithCredentials } from "./auth.js";
-import { readDiary, createDiaryEntry, deleteDiaryEntry } from "./diary.js";
+import {
+  readDiary,
+  createDiaryEntry,
+  deleteDiaryEntry,
+  updateDiaryEntry,
+  readDiaryNotes,
+  addDiaryNote,
+  copyMeal,
+  completeDiaryDay,
+} from "./diary.js";
 import { searchFood, fetchBuildId } from "./food.js";
 import {
   getMeasurements,
@@ -77,6 +86,29 @@ export class MFPClient {
 
   async deleteDiaryEntry(entryId: string): Promise<void> {
     return deleteDiaryEntry(this.config, entryId);
+  }
+
+  async updateDiaryEntry(
+    entryId: string,
+    updates: { servings?: number; serving_size_id?: string; meal_name?: string }
+  ): Promise<DiaryEntry> {
+    return updateDiaryEntry(this.config, entryId, updates);
+  }
+
+  async readDiaryNotes(date: string, noteType?: string): Promise<unknown> {
+    return readDiaryNotes(this.config, date, noteType);
+  }
+
+  async addDiaryNote(data: { date: string; note: string; note_type?: string }): Promise<unknown> {
+    return addDiaryNote(this.config, data);
+  }
+
+  async copyMeal(data: { from_date: string; to_date: string; from_meal: string; to_meal: string }): Promise<unknown> {
+    return copyMeal(this.config, data);
+  }
+
+  async completeDiaryDay(date: string): Promise<unknown> {
+    return completeDiaryDay(this.config, date);
   }
 
   async getMeasurements(): Promise<MeasurementEntry[]> {

@@ -88,4 +88,132 @@ export function registerDiaryCommand(program: Command): void {
         outputError((err as Error).message, opts.json);
       }
     });
+
+  diary
+    .command("update <id>")
+    .description("Update a diary entry")
+    .option("--servings <number>", "Number of servings", parseFloat)
+    .option("--serving-size <id>", "Serving size ID")
+    .option("--meal <name>", "Meal name")
+    .option("--json", "Output as JSON")
+    .action(async (id: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const updates: { servings?: number; serving_size_id?: string; meal_name?: string } = {};
+        if (opts.servings !== undefined) updates.servings = opts.servings;
+        if (opts.servingSize) updates.serving_size_id = opts.servingSize;
+        if (opts.meal) updates.meal_name = opts.meal;
+        const client = new MFPClient(config);
+        const result = await client.updateDiaryEntry(id, updates);
+        outputResult(result, opts.json, (entry: DiaryEntry) => {
+          console.log(`Updated entry ${entry.id}`);
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  diary
+    .command("notes [date]")
+    .description("View diary notes for a date")
+    .option("--type <type>", "Note type", "food")
+    .option("--json", "Output as JSON")
+    .action(async (date: string | undefined, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const result = await client.readDiaryNotes(date || todayStr(), opts.type);
+        outputResult(result, opts.json, (data: unknown) => {
+          console.log(JSON.stringify(data, null, 2));
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  diary
+    .command("add-note <note>")
+    .description("Add a diary note")
+    .option("--date <date>", "Date (YYYY-MM-DD)")
+    .option("--type <type>", "Note type", "food")
+    .option("--json", "Output as JSON")
+    .action(async (note: string, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const result = await client.addDiaryNote({
+          date: opts.date || todayStr(),
+          note,
+          note_type: opts.type,
+        });
+        outputResult(result, opts.json, () => {
+          console.log("Note added.");
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  diary
+    .command("copy")
+    .description("Copy a meal from one date to another")
+    .requiredOption("--from-date <date>", "Source date (YYYY-MM-DD)")
+    .requiredOption("--to-date <date>", "Destination date (YYYY-MM-DD)")
+    .requiredOption("--from-meal <meal>", "Source meal name")
+    .requiredOption("--to-meal <meal>", "Destination meal name")
+    .option("--json", "Output as JSON")
+    .action(async (opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const result = await client.copyMeal({
+          from_date: opts.fromDate,
+          to_date: opts.toDate,
+          from_meal: opts.fromMeal,
+          to_meal: opts.toMeal,
+        });
+        outputResult(result, opts.json, () => {
+          console.log(`Copied ${opts.fromMeal} from ${opts.fromDate} to ${opts.toMeal} on ${opts.toDate}`);
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
+
+  diary
+    .command("complete [date]")
+    .description("Complete diary day")
+    .option("--json", "Output as JSON")
+    .action(async (date: string | undefined, opts) => {
+      try {
+        const config = await loadAuth();
+        if (!config) {
+          outputError("Not logged in.", opts.json);
+          return;
+        }
+        const client = new MFPClient(config);
+        const result = await client.completeDiaryDay(date || todayStr());
+        outputResult(result, opts.json, () => {
+          console.log(`Diary day ${date || todayStr()} completed.`);
+        });
+      } catch (err) {
+        outputError((err as Error).message, opts.json);
+      }
+    });
 }
