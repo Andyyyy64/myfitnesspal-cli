@@ -107,4 +107,4 @@ The food search endpoint (`/_next/data/{buildId}/...`) requires an active next-a
 - **Rate limiting** - MFP may rate-limit requests. No built-in rate limiting in the CLI.
 - **API instability** - Internal APIs can change without notice on any MFP deployment.
 - **Exercise logging** - The exercise log POST endpoint (`POST /api/services/diary` with `type: "exercise_entry"`) is not fully working. The backend consistently rejects the request body with a "quantity" validation error. Exercise search, lookup, get, update, and delete all work.
-- **Nutrient goals update** - The `POST /api/services/nutrient-goals` endpoint returns 422 for all attempted body formats. The MFP web frontend updates goals via `PATCH /api/services/users` instead. Read-only access to goals works fine.
+- **Nutrient goals update** - Requires CSRF token. The CLI handles this automatically by fetching from `/api/auth/csrf` before each update.

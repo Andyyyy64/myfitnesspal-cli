@@ -192,17 +192,35 @@ The `units` field can be `"cups"` or `"milliliters"`. The web frontend uses `"mi
 
 ### POST /api/services/nutrient-goals
 
-**Status: Not working.** The endpoint exists but returns 422 for all attempted body formats. The MFP web frontend updates nutrient goals via `PATCH /api/services/users` (user profile patch) instead of this endpoint. The GET endpoint works and returns:
+Requires `x-csrf-token` header (fetch from `GET /api/auth/csrf`).
 
 ```json
-[{
-  "valid_from": "YYYY-MM-DD",
-  "valid_to": "YYYY-MM-DD",
-  "daily_goals": [{ "day_of_week": "monday", "group_id": 0, "energy": {"value": 2000, "unit": "calories"}, "carbohydrates": 250, "protein": 100, "fat": 67, ... }],
-  "default_group_id": 0,
-  "default_goal": { ... }
-}]
+{
+  "item": {
+    "valid_from": "YYYY-MM-DD",
+    "daily_goals": [
+      {
+        "day_of_week": "monday",
+        "group_id": 0,
+        "energy": { "value": "2040", "unit": "calories" },
+        "carbohydrates": 255,
+        "protein": 102,
+        "fat": 68,
+        "saturated_fat": 23,
+        "sodium": 2300,
+        "sugar": 77,
+        "fiber": 38,
+        "cholesterol": 300,
+        "potassium": 3500,
+        "assign_exercise_energy": "nutrient_goal"
+      }
+    ],
+    "default_goal": { ... }
+  }
+}
 ```
+
+Note: `energy.value` must be a **string**, not a number. `daily_goals` must include all 7 days (monday-sunday). The CSRF token cookie must also be included.
 
 ## Response patterns
 

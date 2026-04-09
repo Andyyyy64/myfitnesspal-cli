@@ -256,8 +256,8 @@ export class MFPClient {
     return deleteMeasurementType(this.config, typeId);
   }
 
-  async updateNutrientGoals(goals: Record<string, unknown>): Promise<unknown> {
-    return updateNutrientGoals(this.config, goals);
+  async updateNutrientGoals(updates: { calories?: number; protein?: number; carbs?: number; fat?: number }): Promise<unknown> {
+    return updateNutrientGoals(this.config, updates);
   }
 
   async getDiarySettings(): Promise<unknown> {

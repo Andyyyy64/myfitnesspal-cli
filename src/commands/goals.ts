@@ -49,10 +49,10 @@ export function registerGoalsCommand(program: Command): void {
           return;
         }
 
-        const updates: Record<string, unknown> = {};
-        if (opts.calories !== undefined) updates.energy = parseFloat(opts.calories);
+        const updates: { calories?: number; protein?: number; carbs?: number; fat?: number } = {};
+        if (opts.calories !== undefined) updates.calories = parseFloat(opts.calories);
         if (opts.protein !== undefined) updates.protein = parseFloat(opts.protein);
-        if (opts.carbs !== undefined) updates.carbohydrates = parseFloat(opts.carbs);
+        if (opts.carbs !== undefined) updates.carbs = parseFloat(opts.carbs);
         if (opts.fat !== undefined) updates.fat = parseFloat(opts.fat);
 
         if (Object.keys(updates).length === 0) {
@@ -64,9 +64,9 @@ export function registerGoalsCommand(program: Command): void {
         const result = await client.updateNutrientGoals(updates);
         outputResult(result, opts.json, () => {
           const parts: string[] = [];
-          if (updates.energy !== undefined) parts.push(`Calories: ${updates.energy} kcal`);
+          if (updates.calories !== undefined) parts.push(`Calories: ${updates.calories} kcal`);
           if (updates.protein !== undefined) parts.push(`Protein: ${updates.protein} g`);
-          if (updates.carbohydrates !== undefined) parts.push(`Carbs: ${updates.carbohydrates} g`);
+          if (updates.carbs !== undefined) parts.push(`Carbs: ${updates.carbs} g`);
           if (updates.fat !== undefined) parts.push(`Fat: ${updates.fat} g`);
           console.log(`Goals updated: ${parts.join(", ")}`);
         });
