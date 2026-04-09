@@ -8,6 +8,8 @@ import { registerWeightCommand } from "./commands/weight.js";
 import { registerWaterCommand } from "./commands/water.js";
 import { registerExerciseCommand } from "./commands/exercise.js";
 import { registerGoalsCommand } from "./commands/goals.js";
+import { registerFoodCommand } from "./commands/food.js";
+import { registerMealsCommand } from "./commands/meals.js";
 
 const program = new Command();
 
@@ -24,5 +26,7 @@ registerWeightCommand(program);
 registerWaterCommand(program);
 registerExerciseCommand(program);
 registerGoalsCommand(program);
+registerFoodCommand(program);
+registerMealsCommand(program);
 
 program.parse();

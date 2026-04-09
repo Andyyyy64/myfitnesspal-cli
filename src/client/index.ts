@@ -34,6 +34,16 @@ import {
 } from "./exercise.js";
 import type { ExerciseSearchResult } from "./exercise.js";
 import { getNutrientGoals } from "./goals.js";
+import {
+  getFoodById,
+  getMyFoods,
+  createCustomFood,
+  updateCustomFood,
+  deleteCustomFood,
+  getTopFoods,
+} from "./foods.js";
+import { getSavedMeals, deleteSavedMeal } from "./meals.js";
+import type { SavedMeal } from "./meals.js";
 import { saveAuth } from "../utils/config.js";
 
 export class MFPClient {
@@ -155,6 +165,43 @@ export class MFPClient {
 
   async getNutrientGoals(date?: string): Promise<NutrientGoals> {
     return getNutrientGoals(this.config, date);
+  }
+
+  async getFoodById(foodId: string): Promise<FoodItem> {
+    return getFoodById(this.config, foodId);
+  }
+
+  async getMyFoods(): Promise<FoodItem[]> {
+    return getMyFoods(this.config);
+  }
+
+  async createCustomFood(food: {
+    description: string;
+    brand_name?: string;
+    serving_sizes: Array<{ unit: string; value: number; nutrition_multiplier: number }>;
+    nutritional_contents: Record<string, unknown>;
+  }): Promise<FoodItem> {
+    return createCustomFood(this.config, food);
+  }
+
+  async updateCustomFood(foodId: string, updates: Record<string, unknown>): Promise<FoodItem> {
+    return updateCustomFood(this.config, foodId, updates);
+  }
+
+  async deleteCustomFood(foodId: string): Promise<void> {
+    return deleteCustomFood(this.config, foodId);
+  }
+
+  async getTopFoods(fromDate: string, toDate: string, lists?: string[]): Promise<unknown> {
+    return getTopFoods(this.config, fromDate, toDate, lists);
+  }
+
+  async getSavedMeals(): Promise<SavedMeal[]> {
+    return getSavedMeals(this.config);
+  }
+
+  async deleteSavedMeal(mealId: string): Promise<void> {
+    return deleteSavedMeal(this.config, mealId);
   }
 
   static async login(
